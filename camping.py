@@ -229,7 +229,7 @@ def format_output(park_information):
 
 def main(parks):
     park_information = check_all_parks(parks)
-    out = format_output
+    out = format_output(park_information)
 
     print("\n".join(out))
     return availabilities

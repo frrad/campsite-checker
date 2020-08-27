@@ -170,7 +170,7 @@ def consecutive_nights(available, nights):
     return len(longest_consecutive) >= nights
 
 
-def main(parks):
+def check_all_parks(parks):
     out = []
     availabilities = False
     for park_id in parks:
@@ -186,17 +186,34 @@ def main(parks):
         current, maximum = get_num_available_sites(
             park_information, args.start_date, args.end_date, nights=args.nights
         )
-        if current:
-            emoji = SUCCESS_EMOJI
-            availabilities = True
-        else:
-            emoji = FAILURE_EMOJI
 
         out.append(
-            "{} {} ({}): {} site(s) available out of {} site(s)".format(
-                emoji, name_of_site, park_id, current, maximum
-            )
+            {
+                "name_of_site": name_of_site,
+                "park_id": park_id,
+                "current": current,
+                "maximum": maximum,
+            }
         )
+
+    return out
+
+
+def main(parks):
+    park_information = check_all_parks(parks)
+
+    out = [
+        "{} {} ({}): {} site(s) available out of {} site(s)".format(
+            SUCCESS_EMOJI if x["current"] else FAILURE_EMOJI,
+            x["name_of_site"],
+            x["park_id"],
+            x["current"],
+            x["maximum"],
+        )
+        for x in park_information
+    ]
+
+    availabilities = any([x["current"] for x in park_information])
 
     if availabilities:
         print(

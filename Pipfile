@@ -12,7 +12,6 @@ click = "*"
 fake-useragent = "*"
 future = "*"
 idna = "*"
-isort = "*"
 oauthlib = "*"
 python-dateutil = "*"
 python-twitter = "*"
@@ -25,6 +24,7 @@ urllib3 = "*"
 
 [dev-packages]
 black = "==18.9b0"
+isort = "*"
 
 [requires]
 python_version = "3.7"

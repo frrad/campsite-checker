@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "070ddddf245c1432ab77895011fcbe759715b1e244d247cdc9d73abcdd830fff"
+            "sha256": "9eda34845c102bd9be5c1491e9f8e51667c6c5014b86e423f8744789bff41c56"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -77,14 +77,6 @@
             ],
             "index": "pypi",
             "version": "==2.10"
-        },
-        "isort": {
-            "hashes": [
-                "sha256:60a1b97e33f61243d12647aaaa3e6cc6778f5eb9f42997650f1cc975b6008750",
-                "sha256:d488ba1c5a2db721669cc180180d5acf84ebdc5af7827f7aaeaa75f73cf0e2b8"
-            ],
-            "index": "pypi",
-            "version": "==5.4.2"
         },
         "oauthlib": {
             "hashes": [
@@ -192,6 +184,14 @@
             ],
             "index": "pypi",
             "version": "==7.1.2"
+        },
+        "isort": {
+            "hashes": [
+                "sha256:60a1b97e33f61243d12647aaaa3e6cc6778f5eb9f42997650f1cc975b6008750",
+                "sha256:d488ba1c5a2db721669cc180180d5acf84ebdc5af7827f7aaeaa75f73cf0e2b8"
+            ],
+            "index": "pypi",
+            "version": "==5.4.2"
         },
         "toml": {
             "hashes": [

@@ -1,0 +1,30 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+appdirs = "*"
+attrs = "*"
+certifi = "*"
+chardet = "*"
+click = "*"
+fake-useragent = "*"
+future = "*"
+idna = "*"
+oauthlib = "*"
+python-dateutil = "*"
+python-twitter = "*"
+requests = "*"
+requests-oauthlib = "*"
+six = "*"
+soupsieve = "*"
+toml = "*"
+urllib3 = "*"
+
+[dev-packages]
+black = "==18.9b0"
+isort = "*"
+
+[requires]
+python_version = "3.7"

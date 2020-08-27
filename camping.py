@@ -199,9 +199,11 @@ def check_all_parks(parks):
     return out
 
 
-def main(parks):
-    park_information = check_all_parks(parks)
+def availabilities(park_information):
+    return any([x["current"] for x in park_information])
 
+
+def format_output(park_information):
     out = [
         "{} {} ({}): {} site(s) available out of {} site(s)".format(
             SUCCESS_EMOJI if x["current"] else FAILURE_EMOJI,
@@ -213,17 +215,22 @@ def main(parks):
         for x in park_information
     ]
 
-    availabilities = any([x["current"] for x in park_information])
-
-    if availabilities:
-        print(
-            "There are campsites available from {} to {}!!!".format(
-                args.start_date.strftime(INPUT_DATE_FORMAT),
-                args.end_date.strftime(INPUT_DATE_FORMAT),
-            )
+    prefix = (
+        "There are campsites available from {} to {}!!!".format(
+            args.start_date.strftime(INPUT_DATE_FORMAT),
+            args.end_date.strftime(INPUT_DATE_FORMAT),
         )
-    else:
-        print("There are no campsites available :(")
+        if availabilities(park_information)
+        else "There are no campsites available :("
+    )
+
+    return [prefix] + out
+
+
+def main(parks):
+    park_information = check_all_parks(parks)
+    out = format_output
+
     print("\n".join(out))
     return availabilities
 

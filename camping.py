@@ -5,15 +5,16 @@ import json
 import logging
 import sys
 from datetime import date, datetime, timedelta
-from dateutil import rrule
 from itertools import count, groupby
 
 import requests
+from dateutil import rrule
 from fake_useragent import UserAgent
 
-
 LOG = logging.getLogger(__name__)
-formatter = logging.Formatter("%(asctime)s - %(process)s - %(levelname)s - %(message)s")
+formatter = logging.Formatter(
+    "%(asctime)s - %(process)s - %(levelname)s - %(message)s"
+)
 sh = logging.StreamHandler()
 sh.setFormatter(formatter)
 LOG.addHandler(sh)
@@ -78,13 +79,17 @@ def get_park_information(park_id, start_date, end_date, campsite_type=None):
 
     # Get each first of the month for months in the range we care about.
     start_of_month = datetime(start_date.year, start_date.month, 1)
-    months = list(rrule.rrule(rrule.MONTHLY, dtstart=start_of_month, until=end_date))
+    months = list(
+        rrule.rrule(rrule.MONTHLY, dtstart=start_of_month, until=end_date)
+    )
 
     # Get data for each month.
     api_data = []
     for month_date in months:
         params = {"start_date": format_date(month_date)}
-        LOG.debug("Querying for {} with these params: {}".format(park_id, params))
+        LOG.debug(
+            "Querying for {} with these params: {}".format(park_id, params)
+        )
         url = "{}{}{}/month?".format(BASE_URL, AVAILABILITY_ENDPOINT, park_id)
         resp = send_request(url, params)
         api_data.append(resp)
@@ -95,10 +100,15 @@ def get_park_information(park_id, start_date, end_date, campsite_type=None):
     for month_data in api_data:
         for campsite_id, campsite_data in month_data["campsites"].items():
             available = []
-            for date, availability_value in campsite_data["availabilities"].items():
+            for date, availability_value in campsite_data[
+                "availabilities"
+            ].items():
                 if availability_value != "Available":
                     continue
-                if campsite_type and campsite_type != campsite_data["campsite_type"]:
+                if (
+                    campsite_type
+                    and campsite_type != campsite_data["campsite_type"]
+                ):
                     continue
                 available.append(date)
             if available:
@@ -114,17 +124,21 @@ def get_name_of_site(park_id):
     return resp["campground"]["facility_name"]
 
 
-def get_num_available_sites(park_information, start_date, end_date, nights=None):
+def get_num_available_sites(
+    park_information, start_date, end_date, nights=None
+):
     maximum = len(park_information)
 
     num_available = 0
     num_days = (end_date - start_date).days
     dates = [end_date - timedelta(days=i) for i in range(1, num_days + 1)]
-    dates = set(format_date(i, format_string=ISO_DATE_FORMAT_RESPONSE) for i in dates)
+    dates = set(
+        format_date(i, format_string=ISO_DATE_FORMAT_RESPONSE) for i in dates
+    )
 
     if nights not in range(1, num_days + 1):
         nights = num_days
-        LOG.debug('Setting number of nights to {}.'.format(nights))
+        LOG.debug("Setting number of nights to {}.".format(nights))
 
     for site, availabilities in park_information.items():
         # List of dates that are in the desired range for this site.
@@ -144,9 +158,15 @@ def consecutive_nights(available, nights):
     """
     Returns whether there are `nights` worth of consecutive nights.
     """
-    ordinal_dates = [datetime.strptime(dstr, ISO_DATE_FORMAT_RESPONSE).toordinal() for dstr in available]
+    ordinal_dates = [
+        datetime.strptime(dstr, ISO_DATE_FORMAT_RESPONSE).toordinal()
+        for dstr in available
+    ]
     c = count()
-    longest_consecutive = max((list(g) for _, g in groupby(ordinal_dates, lambda x: x-next(c))), key=len)
+    longest_consecutive = max(
+        (list(g) for _, g in groupby(ordinal_dates, lambda x: x - next(c))),
+        key=len,
+    )
     return len(longest_consecutive) >= nights
 
 
@@ -198,6 +218,7 @@ def valid_date(s):
         msg = "Not a valid date: '{0}'.".format(s)
         raise argparse.ArgumentTypeError(msg)
 
+
 def positive_int(i):
     i = int(i)
     if i <= 0:
@@ -208,9 +229,14 @@ def positive_int(i):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--debug", "-d", action="store_true", help="Debug log level")
     parser.add_argument(
-        "--start-date", required=True, help="Start date [YYYY-MM-DD]", type=valid_date
+        "--debug", "-d", action="store_true", help="Debug log level"
+    )
+    parser.add_argument(
+        "--start-date",
+        required=True,
+        help="Start date [YYYY-MM-DD]",
+        type=valid_date,
     )
     parser.add_argument(
         "--end-date",
@@ -226,7 +252,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--campsite-type",
         help=(
-            'If you want to filter by a type of campsite. For example '
+            "If you want to filter by a type of campsite. For example "
             '"STANDARD NONELECTRIC" or TODO'
         ),
     )

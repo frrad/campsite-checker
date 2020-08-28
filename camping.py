@@ -199,9 +199,11 @@ def check_all_parks(parks):
     return out
 
 
-def main(parks):
-    park_information = check_all_parks(parks)
+def availabilities(park_information):
+    return any([x["current"] for x in park_information])
 
+
+def format_output(park_information):
     out = [
         "{} {} ({}): {} site(s) available out of {} site(s)".format(
             SUCCESS_EMOJI if x["current"] else FAILURE_EMOJI,
@@ -213,18 +215,25 @@ def main(parks):
         for x in park_information
     ]
 
-    availabilities = any([x["current"] for x in park_information])
-
-    if availabilities:
-        print(
-            "There are campsites available from {} to {}!!!".format(
-                args.start_date.strftime(INPUT_DATE_FORMAT),
-                args.end_date.strftime(INPUT_DATE_FORMAT),
-            )
+    prefix = (
+        "There are campsites available from {} to {}!!!".format(
+            args.start_date.strftime(INPUT_DATE_FORMAT),
+            args.end_date.strftime(INPUT_DATE_FORMAT),
         )
-    else:
-        print("There are no campsites available :(")
-    print("\n".join(out))
+        if availabilities(park_information)
+        else "There are no campsites available :("
+    )
+
+    return [prefix] + out
+
+
+def main(parks, success_only):
+    park_information = check_all_parks(parks)
+    out = format_output(park_information)
+
+    if availabilities(park_information) or not success_only:
+        print("\n".join(out))
+
     return availabilities
 
 
@@ -244,10 +253,17 @@ def positive_int(i):
     return i
 
 
+def boolean(i):
+    return i is not None
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--debug", "-d", action="store_true", help="Debug log level"
+    )
+    parser.add_argument(
+        "--success-only", help="Output only on success", type=boolean
     )
     parser.add_argument(
         "--start-date",
@@ -297,7 +313,7 @@ if __name__ == "__main__":
     parks = args.parks or [p.strip() for p in sys.stdin]
 
     try:
-        code = 0 if main(parks) else 1
+        code = 0 if main(parks, args.success_only) else 1
         sys.exit(code)
     except Exception:
         print("Something went wrong")
